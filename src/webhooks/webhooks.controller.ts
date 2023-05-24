@@ -7,13 +7,11 @@ export class WebhooksController {
 
   @Get('/facebook')
   facebookGet(@Query('hub.challenge') challenge: number): number {
-    console.log('challenge', challenge)
     return challenge
   }
 
   @Post('/facebook')
   facebookPost(@Body() body): string {
-    console.log('body', JSON.stringify(body))
     return body
   }
 }

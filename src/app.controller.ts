@@ -46,7 +46,6 @@ export class AppController {
     // Find the user by email
     const user = await this.userModel.findOne({ email });
     if (!user) {
-      console.log('User not found');
       return { success: false, message: 'User not found' };
     }
 
@@ -88,8 +87,6 @@ export class AppController {
       firstName: user.firstName,
       lastName: user.lastName,
     };
-
-    console.log('User data:', userData);
 
     return { success: true, data: userData };
   }
