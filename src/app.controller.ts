@@ -72,15 +72,13 @@ export class AppController {
   @Get('/user')
   async getUser(@Req() req): Promise<any> {
 
-    const loggedInUserId = req.user?.userId; // Assuming you have implemented the authentication middleware to set the logged-in user's ID in the request object
+    const loggedInUserId = req.user?.userId; 
 
-    // Fetch the logged-in user's data from the database based on the ID
     const user = await this.userModel.findById(loggedInUserId);
     if (!user) {
       return { success: false, message: 'User not found' };
     }
 
-    // Return the user data with the name
     const userData = {
       id: user._id,
       email: user.email,

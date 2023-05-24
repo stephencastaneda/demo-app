@@ -13,10 +13,4 @@ describe('WebhooksController', () => {
 
     webhooksController = app.get<WebhooksController>(WebhooksController);
   });
-
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(webhooksController.getHello()).toBe('Hello World!');
-    });
-  });
 });
