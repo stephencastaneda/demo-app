@@ -1,41 +1,96 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get, Req } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import * as bcrypt from 'bcrypt';
+import * as jwt from 'jsonwebtoken';
+import { UserDocument } from '../schemas/user.model';
+
 import { AppService } from './app.service';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  private readonly secretKey = 'your-secret-key'
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  constructor(
+    private readonly appService: AppService,
+    @InjectModel('User') private readonly userModel: Model<UserDocument>,
+  ) {}
+
+  @Post('/register')
+  async register(@Body() { email, password, firstName, lastName }): Promise<any> {
+    // Check if user already exists
+    const existingUser = await this.userModel.findOne({ email });
+    if (existingUser) {
+      return { success: false, message: 'User already exists' };
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user
+    const user = new this.userModel({
+      email,
+      password: hashedPassword,
+      firstName,
+      lastName
+    });
+
+    // Save the user to the database
+    const result = await user.save();
+
+    return { success: true, message: 'User registered successfully', userId: result._id };
   }
 
+  @Post('/login')
+  async login(@Body() { email, password }): Promise<any> {
+    // Find the user by email
+    const user = await this.userModel.findOne({ email });
+    if (!user) {
+      console.log('User not found');
+      return { success: false, message: 'User not found' };
+    }
 
-@Post('/login')
-login(@Body() { email, password }): any {
-  // Mock user data
-  const users = [
-    { id: 1, email: 'test@example.com', password: 'password123' },
-    { id: 2, email: 'user@example.com', password: 'test123' },
-  ];
+    // Compare the password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return { success: false, message: 'Invalid password' };
+    }
 
-  const user = users.find((user) => user.email === email && user.password === password);
+    // Generate the JWT token
+    const token = jwt.sign({ userId: user._id, email: user.email }, this.secretKey, { expiresIn: '1h' });
 
-  if (user) {
-    // Mock user data to return upon successful login
+    // Return the user data and token upon successful login
     const userData = {
-      id: user.id,
+      id: user._id,
       email: user.email,
-      name: 'John Doe',
+      firstName: user.firstName,
+      lastName: user.lastName
     };
 
-    return { success: true, data: userData };
-  } else {
-    return { success: false, message: 'Invalid email or password' };
+    return { success: true, message: 'Login successful', data: userData, token };
   }
-}
+
   @Get('/user')
-  getUser(): any {
-    return this.appService.getUserData();
+  async getUser(@Req() req): Promise<any> {
+
+    const loggedInUserId = req.user?.userId; // Assuming you have implemented the authentication middleware to set the logged-in user's ID in the request object
+
+    // Fetch the logged-in user's data from the database based on the ID
+    const user = await this.userModel.findById(loggedInUserId);
+    if (!user) {
+      return { success: false, message: 'User not found' };
+    }
+
+    // Return the user data with the name
+    const userData = {
+      id: user._id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+    };
+
+    console.log('User data:', userData);
+
+    return { success: true, data: userData };
   }
 }
