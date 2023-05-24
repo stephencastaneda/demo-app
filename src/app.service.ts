@@ -7,7 +7,6 @@ export class AppService {
   }
 
   login(email: string, password: string): any {
-    // Mock user data
     const users = [
       { id: 1, email: 'test@example.com', password: 'password123' },
       { id: 2, email: 'user@example.com', password: 'test123' },
@@ -16,7 +15,6 @@ export class AppService {
     const user = users.find((user) => user.email === email && user.password === password);
 
     if (user) {
-      // Mock user data to return upon successful login
       const userData = {
         id: user.id,
         email: user.email,
@@ -29,7 +27,6 @@ export class AppService {
     }
   }
   getUserData(): any {
-    // Mock user data
     const userData = {
       id: 1,
       email: 'test@example.com',

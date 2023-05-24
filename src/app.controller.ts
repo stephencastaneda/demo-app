@@ -18,16 +18,13 @@ export class AppController {
 
   @Post('/register')
   async register(@Body() { email, password, firstName, lastName }): Promise<any> {
-    // Check if user already exists
     const existingUser = await this.userModel.findOne({ email });
     if (existingUser) {
       return { success: false, message: 'User already exists' };
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create a new user
     const user = new this.userModel({
       email,
       password: hashedPassword,
@@ -35,7 +32,6 @@ export class AppController {
       lastName
     });
 
-    // Save the user to the database
     const result = await user.save();
 
     return { success: true, message: 'User registered successfully', userId: result._id };
@@ -43,22 +39,18 @@ export class AppController {
 
   @Post('/login')
   async login(@Body() { email, password }): Promise<any> {
-    // Find the user by email
     const user = await this.userModel.findOne({ email });
     if (!user) {
       return { success: false, message: 'User not found' };
     }
 
-    // Compare the password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return { success: false, message: 'Invalid password' };
     }
 
-    // Generate the JWT token
     const token = jwt.sign({ userId: user._id, email: user.email }, this.secretKey, { expiresIn: '1h' });
 
-    // Return the user data and token upon successful login
     const userData = {
       id: user._id,
       email: user.email,
