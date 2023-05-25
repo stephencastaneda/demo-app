@@ -4,8 +4,8 @@ import bcrypt from 'bcrypt';
 export interface UserDocument extends Document {
   email: string;
   password: string;
-  firstName: { type: String, required: true },
-  lastName: { type: String, required: true },
+  firstName: string;
+  lastName: string;
 }
 
 const UserSchema = new Schema<UserDocument>({
@@ -15,7 +15,6 @@ const UserSchema = new Schema<UserDocument>({
   lastName: { type: String, required: true },
 });
 
-// Pre-save hook to hash the password before saving
 UserSchema.pre<UserDocument>('save', async function (next) {
   if (this.isModified('password')) {
     try {

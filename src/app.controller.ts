@@ -18,25 +18,38 @@ export class AppController {
 
   @Post('/register')
   async register(@Body() { email, password, firstName, lastName }): Promise<any> {
+    console.log('Received firstName:', firstName);
+    console.log('Received lastName:', lastName);
+  
     const existingUser = await this.userModel.findOne({ email });
     if (existingUser) {
       return { success: false, message: 'User already exists' };
     }
-
+  
     const hashedPassword = await bcrypt.hash(password, 10);
-
+  
     const user = new this.userModel({
       email,
       password: hashedPassword,
       firstName,
       lastName
     });
-
+  
+    console.log('Saving user:', user);
+  
     const result = await user.save();
-
-    return { success: true, message: 'User registered successfully', userId: result._id };
+  
+    const token = jwt.sign({ userId: user._id, email: user.email }, this.secretKey, { expiresIn: '1h' });
+  
+    return {
+      success: true,
+      message: 'User registered successfully',
+      userId: result._id,
+      token,
+      firstName: user.firstName,
+    };
   }
-
+  
   @Post('/login')
   async login(@Body() { email, password }): Promise<any> {
     const user = await this.userModel.findOne({ email });
@@ -65,6 +78,7 @@ export class AppController {
   async getUser(@Req() req): Promise<any> {
 
     const loggedInUserId = req.user?.userId; 
+    console.log('logged in user id', loggedInUserId)
 
     const user = await this.userModel.findById(loggedInUserId);
     if (!user) {
