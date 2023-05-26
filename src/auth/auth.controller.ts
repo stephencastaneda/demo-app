@@ -18,9 +18,7 @@ export class AuthController {
 
   @Post('/register')
   async register(@Body() { email, password, firstName, lastName }): Promise<any> {
-    console.log('Received firstName:', firstName);
-    console.log('Received lastName:', lastName);
-
+   
     const existingUser = await this.userModel.findOne({ email });
     if (existingUser) {
       return { success: false, message: 'User already exists' };
@@ -35,10 +33,7 @@ export class AuthController {
       lastName
     });
 
-    console.log('Saving user:', user);
-
     const result = await user.save();
-
     const token = jwt.sign({ userId: user._id, email: user.email }, this.secretKey, { expiresIn: '1h' });
 
     return {
@@ -78,7 +73,6 @@ export class AuthController {
   async getUser(@Req() req): Promise<any> {
 
     const loggedInUserId = req.user?.userId; 
-    console.log('logged in user id', loggedInUserId)
 
     const user = await this.userModel.findById(loggedInUserId);
     if (!user) {
