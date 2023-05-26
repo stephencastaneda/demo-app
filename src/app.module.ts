@@ -1,24 +1,22 @@
-import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { WebhooksController } from './webhooks/webhooks.controller';
-import { WebhooksService } from './webhooks/webhooks.service';
-import { User, UserSchema } from '../schemas/user.model';
-import { AuthMiddleware } from './auth.middleware';
+import { AuthModule } from './auth/auth.module';
+import { AuthMiddleware } from './auth/auth.middleware';
 
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://localhost:27017/mongodb'),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    AuthModule,
   ],
-  controllers: [AppController, WebhooksController],
-  providers: [AppService, WebhooksService],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes('/login');
-    consumer.apply(AuthMiddleware).forRoutes('/user');
-    consumer.apply(AuthMiddleware).forRoutes('/register');
+    consumer.apply(AuthMiddleware).forRoutes('/auth/login');
+    consumer.apply(AuthMiddleware).forRoutes('/auth/user');
+    consumer.apply(AuthMiddleware).forRoutes('/auth/register');
   }
 }
