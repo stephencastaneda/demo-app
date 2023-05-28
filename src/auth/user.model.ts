@@ -16,6 +16,12 @@ export class User {
 
   @Prop()
   lastName: string;
+
+  @Prop()
+  facebookOAuthToken: string;
+
+  @Prop()
+  facebookRefreshToken: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

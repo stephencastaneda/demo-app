@@ -1,11 +1,13 @@
 import { Schema, Document, model } from 'mongoose';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 
 export interface UserDocument extends Document {
   email: string;
   password: string;
   firstName: string;
   lastName: string;
+  facebookOAuthToken: string;
+  facebookRefreshToken: string;
 }
 
 const UserSchema = new Schema<UserDocument>({
@@ -13,6 +15,8 @@ const UserSchema = new Schema<UserDocument>({
   password: { type: String, required: true },
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
+  facebookOAuthToken: { type: String },
+  facebookRefreshToken: { type: String },
 });
 
 UserSchema.pre<UserDocument>('save', async function (next) {
@@ -28,3 +32,4 @@ UserSchema.pre<UserDocument>('save', async function (next) {
 });
 
 export const UserModel = model<UserDocument>('User', UserSchema);
+
