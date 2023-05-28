@@ -82,7 +82,7 @@ export class AuthService {
           params: {
             client_id: 'your-client-id',
             client_secret: 'your-client-secret',
-            redirect_uri: 'http://localhost:3000/auth/facebook/callback',
+            redirect_uri: 'https://9356-2603-8000-7b00-a096-f49f-6cc3-5758-1e1d.ngrok-free.app/auth/facebook',
             code,
           },
         }

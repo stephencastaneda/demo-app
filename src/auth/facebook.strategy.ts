@@ -9,7 +9,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
     super({
       clientID: '183252494682576',
       clientSecret: '70debf9d28542544ccbfea9b08ef224f',
-      callbackURL: 'http://localhost:3000/auth/facebook/callback',
+      callbackURL: 'https://9356-2603-8000-7b00-a096-f49f-6cc3-5758-1e1d.ngrok-free.app/auth/facebook/callback',
       profileFields: ['id', 'email', 'name', 'picture'],
     });
   }

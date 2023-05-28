@@ -108,8 +108,8 @@ async getUser(@Req() req): Promise<any> {
   @Redirect('https://www.facebook.com/v13.0/dialog/oauth', 302)
   facebookLogin() {
     const queryParams = new URLSearchParams({
-      client_id: 'your-client-id',
-      redirect_uri: 'http://localhost:3000/auth/facebook/callback',
+      client_id: '183252494682576',
+      redirect_uri: 'https://9356-2603-8000-7b00-a096-f49f-6cc3-5758-1e1d.ngrok-free.app/auth/facebook/callback',
       scope: 'email',
     }).toString();
     return {
